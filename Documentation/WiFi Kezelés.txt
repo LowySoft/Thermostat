@@ -1,0 +1,13 @@
+#include "ESP8266WiFi.h"
+
+WiFi keresés:
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+
+int n = WiFi.scanNetworks(); // Megkeresi a WiFi routereket.
+if (n == 0) no network found
+
+WiFi.SSID(i)    Hállózat neve
+WiFi.RSSI(i)    Hállózat térereje uDB
+WiFi.encryptionType(i) Kódolás tipusa  ENC_TYPE_xxx

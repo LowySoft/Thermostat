@@ -1,0 +1,10 @@
+u8g2_font_
+WiFi:
+            font                    id
+        Open_iconic_all_2x      247, 248 0xF7, 0xF8
+        open_iconic_www_2x      72, 81, 0x49, 0x81
+
+
+Ikon kirajzolása:
+      u8g2.setFont(u8g2_font_open_iconic_all_2x_t);
+      u8g2.drawGlyph(x, y, 72);

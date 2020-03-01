@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <meta name="author" content="LowySoft" />
+    <meta name="copyright" content="LowySoft" />
+    <meta name="description" content="LowySoft thermostat setting page" />
+
+    <title>LowySoft Termostat</title>
+
+    <link rel='stylesheet' type='text/css' href='thermo.css'>
+
+    <script type='text/JavaScript'>
+        var hatterSz;
+
+        function copyMonday() {
+            document.getElementsByName('711')[0].value =
+            document.getElementsByName('611')[0].value =
+            document.getElementsByName('511')[0].value =
+            document.getElementsByName('411')[0].value =
+            document.getElementsByName('311')[0].value =
+            document.getElementsByName('211')[0].value =
+                document.getElementsByName('111')[0].value;
+
+            document.getElementsByName('721')[0].value =
+            document.getElementsByName('621')[0].value =
+            document.getElementsByName('521')[0].value =
+            document.getElementsByName('421')[0].value =
+            document.getElementsByName('321')[0].value =
+            document.getElementsByName('221')[0].value =
+                document.getElementsByName('121')[0].value;
+
+            document.getElementsByName('712')[0].value =
+            document.getElementsByName('612')[0].value =
+            document.getElementsByName('512')[0].value =
+            document.getElementsByName('412')[0].value =
+            document.getElementsByName('312')[0].value =
+            document.getElementsByName('212')[0].value =
+                document.getElementsByName('112')[0].value;
+
+            document.getElementsByName('722')[0].value =
+            document.getElementsByName('622')[0].value =
+            document.getElementsByName('522')[0].value =
+            document.getElementsByName('422')[0].value =
+            document.getElementsByName('322')[0].value =
+            document.getElementsByName('222')[0].value =
+                document.getElementsByName('122')[0].value;
+
+        }
+
+        function loaded()
+        {
+          document.getElementById('TermostatID').innerHTML = 'No id';
+            // Aktualis beállítása
+        }
+
+    </script>
+</head>
+
+<body onload="loaded();">
+  <p><h1 style='text-align: center; line-height:50%'>LowySoft Termosztát</h1></p>
+  <h2 style='text-align: center; line-height: 0%;'><label id='TermostatID'>id</label></h2>
+  <h3 style='text-align: center; line-height:75%'>Általános beállítások</h3>
+  <br/>
+    
+    <form action='therm_settings'>
+    <fieldset style='text-align: center; width:min-content;'>
+        <legend>&nbsp;Hőmérségleti határértékek beálítása&nbsp;</legend>
+        <br/>
+        <div class="tg-wrap"><table class="tg">
+            <tr>
+              <th class="tg-c3ow"></th>
+              <th class="tg-c3ow"></th>
+              <th class="tg-c3ow">Hétfő</th>
+              <th class="tg-c3ow">Kedd</th>
+              <th class="tg-c3ow">Szerda</th>
+              <th class="tg-c3ow">Csötőrtök</th>
+              <th class="tg-c3ow">Péntek</th>
+              <th class="tg-c3ow">Szombat</th>
+              <th class="tg-c3ow">Vasárnap</th>
+            </tr>
+            <tr>
+              <td class="tg-nref" rowspan="2">Nappal</td>
+              <td class="tg-996f">Maximum</td>
+              <td class="tg-996f"><input type='text' name='111' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='211' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='311' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='411' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='511' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='611' size='4' value='22.5'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='711' size='4' value='22.5'/>&nbsp;°C</td>
+            </tr>
+            <tr>
+              <td class="tg-c3ow">Minimum</td>
+              <td class="tg-c3ow"><input type='text' name='112' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='212' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='312' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='412' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='512' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='612' size='4' value='21.0'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='712' size='4' value='21.0'/>&nbsp;°C</td>
+            </tr>
+            <tr>
+              <td class="tg-nref" rowspan="2">Este</td>
+              <td class="tg-996f">Maximum</td>
+              <td class="tg-996f"><input type='text' name='121' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='221' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='321' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='421' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='521' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='621' size='4' value='20.0'/>&nbsp;°C</td>
+              <td class="tg-996f"><input type='text' name='721' size='4' value='20.0'/>&nbsp;°C</td>
+            </tr>
+            <tr>
+              <td class="tg-c3ow">Minimum</td>
+              <td class="tg-c3ow"><input type='text' name='122' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='222' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='322' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='422' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='522' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='622' size='4' value='18.5'/>&nbsp;°C</td>
+              <td class="tg-c3ow"><input type='text' name='722' size='4' value='18.5'/>&nbsp;°C</td>
+            </tr>
+          </table></div><br/>
+          <input type='button' class='Button' onclick='copyMonday();' value='Hétfői beállítások másolása'/>
+        </fieldset>    
+
+        <p><input type='submit' class='Button' formaction="./root.html" value='Vissza'/>
+       <input type='submit' class='Button' value='Mentés'/></p>
+
+    </form>
+</h4>
+<br/>
+<div style='position: relative;'>
+  <h6 style='position: fixed; bottom: 0; width:100%; left: 20px;'>
+    LowySost Termostat (C) 2020 V: 0.02.0000<br/>
+    LowySoft Termostat Web Meneger (C) 2020 V: 1.00.000
+  </h6>
+</div>
+</body>

@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <meta name="author" content="LowySoft" />
+    <meta name="copyright" content="LowySoft" />
+    <meta name="description" content="LowySoft thermostat setting page" />
+
+    <title>LowySoft Termostat</title>
+
+    <link rel='stylesheet' type='text/css' href='thermo.css'>
+    <script type='text/JavaScript'>
+        var hatterSz;
+        var tcPass;// = document.getElementById('Passworld');
+        var tcSSID;// = document.getElementById('SSID');
+
+        function setTextBoxEnables(numb) {
+            var ep = document.getElementsByName("APList")[numb].getAttributeNode('ePassw').value;
+            var es = document.getElementsByName("APList")[numb].getAttributeNode('eSSID').value;
+
+            if (ep == 1) {
+                tcPass.disabled = false;
+                tcPass.style.backgroundColor = hatterSz;
+            }
+            else {
+                tcPass.disabled = true;
+                tcPass.style.backgroundColor = '#606060';
+            }
+
+            if (es == 1) {
+                tcSSID.disabled = false;
+                tcSSID.style.backgroundColor = hatterSz;
+            }
+            else {
+                tcSSID.disabled = true;
+                tcSSID.style.backgroundColor = '#606060';
+            }
+
+            return;
+        }
+        function selectAP(num) {
+            document.getElementsByName("APList")[num].checked = true;
+            setTextBoxEnables(num);
+        }
+
+        function loaded()
+        {
+            document.getElementById('TermostatID').innerHTML = 'No id';
+            hatterSz = document.getElementById('Passworld').style.backgroundColor;
+            tcPass = document.getElementById('Passworld');
+            tcSSID = document.getElementById('SSID');
+
+            // Aktualis beállítása
+            selectAP(1);
+            tcPass.style.fontSize = '80%';
+            tcSSID.style.fontSize = '80%';
+        }
+
+    </script>
+</head>
+<body onload="loaded();">
+    <p><h1 style='text-align: center; line-height:50%'>LowySoft Termosztát</h1></p>
+    <h2 style='text-align: center; line-height: 0%;'><label id='TermostatID'>id</label></h2>
+    <h3 style='text-align: center; line-height:75%'>Hálózati beállítások</h3>
+    <br/>
+    
+    <form action='ap_save_selectAP'>
+    <fieldset>
+        <legend>&nbsp;Válasszon hálózatot&nbsp;</legend>
+            <input type='radio' name='APList' id="APList_1" value='1' ePassw=1 eSSID=0 onclick='setTextBoxEnables(0);'/><label for='APList_1'>Első</label></label><br/>
+            <input type='radio' name='APList' id="APList_2" value='2' ePassw=0 eSSID=0 onclick='setTextBoxEnables(1);'/><label for='APList_2'>Második</label><br/>
+            <input type='radio' name='APList' id="APList_3" value='3' ePassw=1 eSSID=0 onclick='setTextBoxEnables(2);'/><label for='APList_3'>Harmadik</label><br/>
+            <br>
+            <input type='radio' name='APList' id="APList_4" value='4' ePassw=1 eSSID=1 onclick='setTextBoxEnables(3);'/><label for='APList_4'>Kézi bevitel:</label><br/>
+            <table>
+                <tr>
+                    <td style='text-align: right;'>SSID:</td>
+                    <td><input type='text' name="SSID" id='SSID' size='32'/></td>
+                </tr>
+                <tr>
+
+                    <td style='text-align: right;'>Jelszó:</td>
+                    <td><input type='text' name="Passworld" id='Passworld' size='64'><br/></td>
+                </tr>
+            </table>
+        </fieldset>    
+    <p><input type='submit' class='Button' formaction="./root.html" value='Vissza'/>
+       <input type='submit' class='Button' value='Mentés' /></p>
+
+    </form>
+
+<br/>
+<div style='position: relative;'>
+    <h6 style='position: fixed; bottom: 0; width:100%; left: 20px;'>
+      LowySost Termostat (C) 2020 V: 0.02.0000<br/>
+      LowySoft Termostat Web Meneger (C) 2020 V: 1.00.000
+    </h6>
+  </div>
+  </body>

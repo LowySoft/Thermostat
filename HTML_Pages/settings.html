@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <meta name="author" content="LowySoft" />
+    <meta name="copyright" content="LowySoft" />
+    <meta name="description" content="LowySoft thermostat setting page" />
+
+    <title>LowySoft Termostat</title>
+
+    <link rel='stylesheet' type='text/css' href='thermo.css'>
+    <script type='text/JavaScript'>
+
+        function loaded()
+        {
+            document.getElementById('TermostatID').innerHTML = 'No id';
+            // Aktualis beállítása
+            document.getElementById('thermID').value = 'Thermostat';
+        }
+
+    </script>
+</head>
+<body onload="loaded();">
+    <p><h1 style='text-align: center; line-height:50%'>LowySoft Termosztát</h1></p>
+    <h2 style='text-align: center; line-height: 0%;'><label id='TermostatID'>id</label></h2><br/>
+    <h3 style='text-align: center; line-height:50%'>Általános beállítások</h3>
+    <br/>
+    
+    <form action='settings'>
+    <fieldset>
+        <legend>&nbsp;Beállítások&nbsp;</legend>
+        <h4>
+            <table>
+                <tr>
+                    <th style='text-align: right;' >Nappali időszak:</th>
+                    <th style='text-align: left; vertical-align: middle;'>
+                        <input type='time' name='dayTimeStart' value='06:00' /> - 
+                        <input type='time' name='dayTimeStop' value='19:00'/> óra között</th>
+                </tr>
+                <tr>
+                    <th style='text-align: right;'>Hőmerséklet:</th>
+                    <th style='text-align: left;'>
+                        <select id='tempSetMode' name='tempSetMode'>
+                            <option value='1'>minden nap eltérő</option>
+                            <option value='2'>Hétköznap és a hétvége eltérő</option>
+                            <option value='3'>Minden nap megegyező</option>
+                        </select>
+                    </th>
+                </tr>
+                <tr>
+                    <th style='text-align: right;'>Azonosító<sup>*</sup>:</th>
+                    <th><input type='text' name="thermID" id='thermID' size='64'/></th>
+                </tr>
+            </table>
+        </h4>
+        <h6>* Az azonosítót a rendszer a helység beazonosítására használja.</h6>
+    </fieldset>
+    <p><input type='submit' class='Button' formaction="./root.html" value='Vissza'/>
+       <input type='submit' class='Button' /></p>
+
+    </form>
+</h4>
+<br/>
+<div style='position: relative;'>
+    <h6 style='position: fixed; bottom: 0; width:100%; left: 20px;'>
+      LowySost Termostat (C) 2020 V: 0.02.0000<br/>
+      LowySoft Termostat Web Meneger (C) 2020 V: 1.00.000
+    </h6>
+  </div>
+  </body>

@@ -1,0 +1,44 @@
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#bbb;margin:0px auto;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 4px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#bbb;color:#594F4F;background-color:#E0FFEB;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 4px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#bbb;color:#493F3F;background-color:#9DE0AD;}
+.tg .tg-996f{background-color:#C2FFD6;border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-nref{background-color:#C2FFD6;border-color:inherit;text-align:center;vertical-align:middle}
+@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}
+
+body {
+    font-size: 150%;
+    background-color:#5f9ea0
+}
+
+form {
+    display: grid;
+    place-items: center;
+    }
+
+.Button {
+box-shadow: 0px 10px 14px -7px #3e7327;
+background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+background-color:#77b55a;
+border-radius:10px;
+border:2px solid #4b8f29;
+display:inline-block;
+cursor:pointer;
+color:#ffffff;
+font-family:Arial;
+font-size:18px;
+font-weight:bold;
+padding:6px 12px;
+text-decoration:none;
+text-shadow:0px 1px 0px #5b8a3c;
+}
+
+.Button:hover {
+background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+background-color:#72b352;
+}
+
+.Button:active {
+position:relative;
+top:1px;
+}

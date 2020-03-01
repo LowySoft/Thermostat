@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN'
+'http://www.w3.org/TR/html4/strict.dtd'>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <meta name="author" content="LowySoft" />
+    <meta name="copyright" content="LowySoft" />
+    <meta name="description" content="LowySoft thermostat setting paga" />
+
+    <title>LowySoft Termostat</title>
+
+    <link rel='stylesheet' type='text/css' href='thermo.css'>
+
+    <script type='text/javascript'>
+        function loaded()
+        {
+            document.getElementById('TermostatID').innerHTML = 'No id';
+        }
+    </script>
+</head>
+
+<body onload="loaded();">
+    <p><h1 style='text-align: center; line-height:50%'>LowySoft Termosztát</h1></p>
+    <h2 style='text-align: center; line-height: 0%;'><label id='TermostatID'>id</label></h2>
+    <h3 style='text-align: center; line-height:75%'>Általános beállítások</h3>
+    <br/>
+  
+    <form>
+        <fieldset style='text-align:center'>
+            <legend>&nbsp;Menü&nbsp;</legend>
+            <br/>
+            <input type='submit' class='Button' formaction="./thermal.html" value='Hőfokok beállítása' style='font-size: 100%;'/><br/>
+            <input type='submit' class='Button' formaction="./settings.html" value='Általános beállítások' style='font-size: 100%;'/><br/>
+            <input type='submit' class='Button' formaction="./ap_select.html" value='Hálózat beállítás' style='font-size: 100%;'/><br/>
+            <br/>
+        </fieldset>    
+
+    </form>
+
+<br/>
+<div style='position: relative;'>
+    <h6 style='position: fixed; bottom: 0; width:100%; left: 20px;'>
+      LowySost Termostat (C) 2020 V: 0.02.0000<br/>
+      LowySoft Termostat Web Meneger (C) 2020 V: 1.00.000
+    </h6>
+  </div>
+  </body>

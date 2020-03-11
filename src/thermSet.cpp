@@ -21,6 +21,7 @@ classThermSet::~classThermSet() {
 
 void classThermSet::begin() {
     EEPROM.begin(eeprom_size);
+    char cID[10];
 
     String SSID = readString(eeprom_addrSSID, eeprom_sizeSSID);
     String Pass = readString(eeprom_addrPass, eeprom_sizePass);
@@ -40,7 +41,8 @@ Serial.printf("EEPROM: %s: %s %d\n", "  ID", ID.c_str(), ID.length());
         clearData(eeprom_addrID, eeprom_sizeID);
         ID.clear();
         ID = thermostatDefId;
-        ID += " - " + String(ESP.getChipId());
+        sprintf(cID, "%X", ESP.getChipId());
+        ID += "-" + String(cID);
         writeString(ID, eeprom_addrID, eeprom_sizeID);
         Serial.println("thermSet: Thermostat ID is invalid. Initialize eeprom area.");
     }
@@ -76,6 +78,12 @@ void classThermSet::setPassworld(char* tStr) {
 
 String classThermSet::getID() {
     return readString(eeprom_addrID, eeprom_sizeID);
+}
+
+String classThermSet::getHardwareID() {
+//    String id;
+    
+    return String(String(ESP.getChipId(), HEX) + String("-thermostat"));
 }
 
 void classThermSet::setID(String tStr) {

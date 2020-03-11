@@ -1,130 +1,30 @@
-#include <Arduino.h>
-#include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-
-#include "connect.h"
+#include "Network communikation/htmlPages.h"
 #include "thermSet.h"
-#include "html_def.h"
 
-ESP8266WebServer server(80);
-uint8_t maxAp;                  // Last network scan found network number
+extern ESP8266WebServer server;
 
-Connect::Connect()
-{
-    mode = notConnect;
-}
+namespace htmlPages {
 
-Connect::~Connect()
-{
-    WiFi.disconnect();
-}
+    String  content;    // Ebbe a stringbe készűl a weblap
+    uint8_t maxAp;      // Elérhető hállózatok száma
 
-// Connect to WiFi
-boolean Connect::begin()
-{
-    uint8_t i;
-
-    WiFi.disconnect();
-    if (thermSet.getSSID().length() == 0)               // Ha nincs SSID beállítva
-        return false;
-
-    mode = modeClient;
-    WiFi.mode(WIFI_STA);
-    delay(100);
-    WiFi.begin(thermSet.getSSID().c_str(), thermSet.getPassworld().c_str());
-    Serial.printf("Connect: Connecting to '%s' network", thermSet.getSSID().c_str());
-
-    i = 0;
-    while ((WiFi.status() != WL_CONNECTED) && (i++ < 16))
-    {
-        delay(1000);
-        Serial.print(".");
-    }
-
-    if (WiFi.status() != WL_CONNECTED) {
-        Serial.println(" failed.");
-        return false;
-    }
-
-    Serial.println(" done.");
-    Serial.printf("      IP=%s\n", WiFi.localIP().toString().c_str());
-    return true;
-}
-
-boolean Connect::beginAP() {
-    IPAddress ap_static_ip, ap_static_gw, ap_static_sn;
-    bool statAP = false;
-
-    ap_static_ip.fromString("192.168.1.1");
-    ap_static_gw.fromString("192.168.1.254");
-    ap_static_sn.fromString("255.255.255.0");
-
-    if (WiFi.mode(WIFI_AP))    // Átváltás AP módba
-    {
-        WiFi.disconnect();
-        delay(100);
-//      numNets = WiFi.scanNetworks();
-
-        if (WiFi.softAPConfig(ap_static_ip, ap_static_gw, ap_static_sn))
-            if (WiFi.softAP(AP_SSID, AP_PASS, 2))
-                statAP = true;
-    }
-
-    if (statAP) {
-        IPAddress APIP = WiFi.softAPIP();
-        Serial.print("Connect: Start AP mode\n    SSID="); Serial.println(AP_SSID);
-        Serial.print("      IP="); Serial.println(APIP.toString());
-    } else {
-        Serial.println("Connect: AP mode not started!");
-    }
-
-    return statAP;
-}
-
-// Start AP, create Web server.
-void Connect::beginServer()
-{
-    // Create Web server.
-    mode = modeAP;
-    createWebServer();
-    server.begin();
-
-    Serial.println("Connect:  Web server is runing.");
-}
-
-void Connect::loop()
-{
-    if (mode == modeAP) {
-        server.handleClient();
-    }
-}
-
-////////////////////////
-//
-// Private section
-
-String content;
-
-void Connect::createWebServer()
-{
-    // Főoldal
-    server.on("/", []() {
+    void createRoot() {
       String ID = thermSet.getID();
 
       content.clear();
-      HTML_Header()
-      HTML_Loaded(ID)
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
-      HTML_Body("Főmenü")
-      HTML_Root
-      HTML_BodyEnd
+      htmlPageElements::HTML_Header(content);
+      htmlPageElements::HTML_Loaded(ID, content);
+      htmlPageElements::HTML_LoadedEnd(content);
+      htmlPageElements::HTML_HeaderEnd(content);
+      htmlPageElements::HTML_Body("Főmenü", content);
+      htmlPageElements::HTML_Root(content);
+      htmlPageElements::HTML_BodyEnd(content);
      
       server.send(200, "text/html", content);
-    });
+    }
 
-    // Hállózatválasztás
-    server.on("/ap_select.html", []() {
+    void createAPSelect() {
         int8_t selAp = -1;
         uint8_t aktAp = 0;
         String ID = thermSet.getID();
@@ -146,20 +46,20 @@ void Connect::createWebServer()
       }
 
       content.clear();
-      HTML_Header();
-      HTML_ApSelect_JS()
-      HTML_ApSelect_SelectAp_JS()
-      HTML_Loaded(thermSet.getID())
-      HTML_ApSelect_Loaded(selAp)
+      htmlPageElements::HTML_Header(content);
+      htmlPageElements::HTML_ApSelect_JS(content);
+      htmlPageElements::HTML_ApSelect_SelectAp_JS(content);
+      htmlPageElements::HTML_Loaded(thermSet.getID(), content);
+      htmlPageElements::HTML_ApSelect_Loaded(selAp, content);
       if (selAp == maxAp) 
           content += "tcSSID.value = '" + thermSet.getSSID() + "';";
       if ( WiFi.encryptionType(selAp) != ENC_TYPE_NONE)
           content += "tcPass.value = '" + thermSet.getPassworld() + "';";
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
+      htmlPageElements::HTML_LoadedEnd(content);
+      htmlPageElements::HTML_HeaderEnd(content);
 
-      HTML_Body("Hálózati beállítások")
-      HTML_ApSelectStart()
+      htmlPageElements::HTML_Body("Hálózati beállítások", content);
+      htmlPageElements::HTML_ApSelectStart(content);
 
       for (aktAp = 0; aktAp < maxAp; aktAp++) {
         content += "<input type='radio' name='APList' id='APList_"; content += String(aktAp);
@@ -181,15 +81,13 @@ void Connect::createWebServer()
       content += "' onclick='setTextBoxEnables(" + String(aktAp) +  ");'/><label for='APList_"; content += String(aktAp);
       content += "'>Kézi bevitel:</label><br/>";
 
-      HTML_ApSelectEnd()
-      HTML_BodyEnd
+      htmlPageElements::HTML_ApSelectEnd(content);
+      htmlPageElements::HTML_BodyEnd(content);
       
       server.send(200, "text/html", content);
+    }
 
-    });
-
-    // Hállózat adatainak mentése
-    server.on("/ap_save_selectAP", HTTP_GET, []() {
+    void saveAPSelect() {
       String ID = thermSet.getID();
       String pSSID;
       String pPassw;
@@ -212,11 +110,11 @@ void Connect::createWebServer()
       }
 
       content.clear();
-      HTML_Header()
-      HTML_Loaded(ID)
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
-      HTML_Body("AP Beállítások mentése")
+      htmlPageElements::HTML_Header(content);
+      htmlPageElements::HTML_Loaded(ID, content);
+      htmlPageElements::HTML_LoadedEnd(content);
+      htmlPageElements::HTML_HeaderEnd(content);
+      htmlPageElements::HTML_Body("AP Beállítások mentése", content);
 
       if (error == false) {
           thermSet.setSSID(pSSID.c_str());
@@ -234,10 +132,9 @@ void Connect::createWebServer()
       content += "<p style='text-align:center'>";
       content += "<input type='button' class='Button' onClick='document.location.href=\"/\";' value='Vissza'/>";
       content += "</p>";
-      HTML_BodyEnd
+      htmlPageElements::HTML_BodyEnd(content);
 
       server.send(200, "text/html", content);
 
-    });
-
+    }
 }

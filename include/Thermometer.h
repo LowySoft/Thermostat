@@ -46,7 +46,7 @@ private:
     float             humidity;        // Mért páratartalom
     uint8_t           senNum;          // Szenzorok száma 
     unsigned long     lastRequest;     // Utolsó olvasás időbéjege
-    int16_t           delayInMillis;   // Várakozási idő sensor olvasáshoz
+    uint16_t          delayInMillis;   // Várakozási idő sensor olvasáshoz
     status_t          status;          // Thermometer status regiszter 
 
 public:

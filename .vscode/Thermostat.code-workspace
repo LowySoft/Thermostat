@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "Thermostat",
+			"path": "D:\\Fejlesztes\\PlatformIO\\Fűtés\\Thermostat"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"array": "cpp",
+			"functional": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"utility": "cpp"
+		}
+	}
+}

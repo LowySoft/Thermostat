@@ -31,6 +31,7 @@ public:
     void   setPassworld(char* tPass);       // WiFi jelszó mentése
 
     String getID();                         // Termosztát azonosító lekérdezése
+    String getHardwareID();                 // Termosztát eszközazonosító (Chip id.thermostat)
     void   setID(String tID);               // Termosztát azonosító mentése
     void   setID(char* tID);                // Termosztát azonosító mentése
 

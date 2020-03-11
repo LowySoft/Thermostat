@@ -2,11 +2,10 @@
 #include <Wire.h>
 #include <OneWire.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266mDNS.h>
 
 #include <U8g2lib.h>
 #include "Thermometer.h"
-#include "connect.h"
+#include "Network communikation/connect.h"
 #include "thermSet.h"
 
 U8G2_SH1106_128X64_NONAME_F_HW_I2C display(U8G2_R0, U8X8_PIN_NONE);    // OLED Dislpay object
@@ -43,13 +42,7 @@ void setup() {
   if (!isWifiConfig) 
     wifiConnect.beginAP();
 
-  if (!MDNS.begin("thermostat"))
-    Serial.println("mDNS not started!");
-  else {
-    MDNS.addService("http", "tcp", 80);
-    Serial.println("mDNS started, domain: thermostat.local");
-  }
-
+  wifiConnect.begin_mDNS();
   wifiConnect.beginServer();
 }
 
@@ -57,7 +50,6 @@ char  str[100];
 unsigned long lastPri = 0;
 
 void loop() {
-  MDNS.update();
   sensors.loop();
   wifiConnect.loop();
 

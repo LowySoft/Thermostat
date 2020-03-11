@@ -10,9 +10,11 @@ class Connect
 {
 private:
     enum {
-        notConnect = 0,
-        modeAP,
-        modeClient
+        notConnect      = 0,
+        modeAP          = 1,
+        modeClient      = 2,
+        modeRunServer   = 4,
+        modeRunmDNS     = 8
     } mode_e;
 
 public:
@@ -21,6 +23,7 @@ public:
 
     boolean begin();        // Csatlakozni próbál
     boolean beginAP();      // AP mód indítása
+    void begin_mDNS();      // mDNS indítása
     void beginServer();     // Web szerver indítása
     void loop();            // loop ciklus függvény
 
@@ -29,7 +32,6 @@ private:
     void    createWebServer();  // Web szerver létrehozása
     
 private:
-    uint8_t numNets;     // Hállózatok száma
     uint8_t mode;        // Üzemmód jelző
 };
 

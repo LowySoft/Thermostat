@@ -7,9 +7,7 @@
             "name": "Win32",
             "includePath": [
                 "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/include",
-                "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/include/Network communikation",
                 "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/src",
-                "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/src/Network communikation",
                 "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                 "C:/Users/Attila/.platformio/lib/U8g2_ID942/src",
                 "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
@@ -49,15 +47,14 @@
                 "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2",
                 "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker/src",
                 "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src",
-                "C:/Users/Attila/.platformio/packages/tool-unity"
+                "C:/Users/Attila/.platformio/packages/tool-unity",
+                ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
                     "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/include",
-                    "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/include/Network communikation",
                     "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/src",
-                    "d:/Fejlesztes/PlatformIO/Fűtés/Thermostat/src/Network communikation",
                     "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/EEPROM",
                     "C:/Users/Attila/.platformio/lib/U8g2_ID942/src",
                     "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
@@ -97,7 +94,8 @@
                     "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2",
                     "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker/src",
                     "C:/Users/Attila/.platformio/packages/framework-arduinoespressif8266/libraries/esp8266/src",
-                    "C:/Users/Attila/.platformio/packages/tool-unity"
+                    "C:/Users/Attila/.platformio/packages/tool-unity",
+                    ""
                 ]
             },
             "defines": [

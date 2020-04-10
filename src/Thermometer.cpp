@@ -110,6 +110,14 @@ float Thermometer::getHumidity()
         return 0;
 }
 
+float Thermometer::getHeatIndex()
+{
+    if (dht)
+        return dht->computeHeatIndex(senTemps[0], humidity, false);
+    else
+        return 0;
+}
+
 boolean Thermometer::isHumidity()
 {
     return dht == NULL ? false : true;

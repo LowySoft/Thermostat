@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Secury files
+include\Network communikation\secureKeys.h
+include/Network communikation/secureKeys.h

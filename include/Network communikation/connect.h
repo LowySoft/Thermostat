@@ -25,10 +25,12 @@ public:
     boolean beginAP();      // AP mód indítása
     void begin_mDNS();      // mDNS indítása
     void beginServer();     // Web szerver indítása
+    void off();             // WiFi kikapcsolása
     void loop();            // loop ciklus függvény
 
+    boolean isAPmode();     // A függvény értéke igaz, ha a WiFi egység AP módban van
+
 private:
-    boolean readNetworkData();  // Beolvassa eeprom-ból a hállózati adatokat, ha kell, inicializálja
     void    createWebServer();  // Web szerver létrehozása
     
 private:

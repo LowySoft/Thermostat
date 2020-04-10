@@ -13,9 +13,8 @@ namespace htmlPageElements {
         content += ".tg .tg-996f{background-color:#C2FFD6;border-color:inherit;text-align:center;vertical-align:top}";
         content += ".tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}";
         content += ".tg .tg-nref{background-color:#C2FFD6;border-color:inherit;text-align:center;vertical-align:middle}";
-        content += "@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}";
+//        content += "@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}";
         content += "body {";
-        content +=     "font-size: 250%;";
         content +=     "background-color:#5f9ea0";
         content += "}";
         content += "form {";
@@ -46,15 +45,30 @@ namespace htmlPageElements {
         content +=     "position:relative;";
         content +=     "top:1px;";
         content += "}";
+        content += ".LowySwitchButton {";
+        content +=     "margin: 5px;";
+        content +=     "border:0px;";
+        content +=     "padding:4px;";
+        content +=     "border-radius: 40px;";
+        content +=     "width: 72px;";
+        content +=     "height: 18px;";
+        content +=     "background-color:lightsalmon;";
+        content +=     "vertical-align: middle;";
+        content += "}";
     }
 
-    void HTML_Header(String &content) {
-        content += "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/strict.dtd'>";
+
+    void HTML_Header(String &content, bool refresh) {
+        content += "<!DOCTYPE html>";
+        content += "<html lang='HU'>";
         content += "<head>";
         content +=    "<meta http-equiv='Content-Type' content='text/html; charset=utf-8'></meta>";
         content +=    "<meta name='author' content='LowySoft' />";
         content +=    "<meta name='copyright' content='LowySoft' />";
         content +=    "<meta name='description' content='LowySoft thermostat setting paga' />";
+        content +=    "<meta name='viewport' content='width=device-width, initial-scale=1.0'>";
+        if (refresh)
+            content += "<meta http-equiv='refresh' content='20'>";
         content +=    "<title>LowySoft Termostat</title>";
         content +=    "<style>";
         globalCSS(content);
@@ -79,16 +93,116 @@ namespace htmlPageElements {
         content += "</head>"; 
     }
 
+    void HTML_createLowySwitchButton_JS(String &content) {
+        content += "function createLowySwitchButton(bTitle, bName, bAppend)";
+        content += "{";
+        content +=      "var b_Title = document.createTextNode(bTitle);";
+        content +=      "var newButton = document.createElement('canvas');";
+        content +=      "var newHidden = document.createElement('input');";
+       content +=      "var newDiv = document.createElement('div');";
+
+        content +=      "newButton.id = bName;";
+        content +=      "newButton.className = 'LowySwitchButton';";
+        content +=      "newButton.addEventListener('click', function(){drawLowySwitchButton(bName, 3);});";
+	
+        content +=      "newHidden.type = 'hidden';";
+        content +=      "newHidden.name = bName;";
+	
+        content +=      "var parent = document.getElementById(bAppend);";
+        content +=      "parent.appendChild(newDiv);";
+        content +=      "newDiv.appendChild(b_Title);";
+        content +=      "newDiv.appendChild(newButton);";
+        content +=      "newDiv.appendChild(newHidden);";
+        content += "}";
+    }
+
+    void HTML_LowySwitchButtonTabe(String &content) {
+        content += "<table border id='LSB_Table' align='center'></table>";
+    }
+
+    void HTML_addLowySwitchButtonToTheTable_JS(String &content) {
+        content += "function addLowySwitchButtonToTheTable(bTitle, bName)";
+        content += "{";
+        content +=      "var newLabel = document.createElement('label');";
+        content +=      "var newButton = document.createElement('canvas');";
+        content +=      "var newHidden = document.createElement('input');";
+
+        content +=      "newLabel.innerHTML=bTitle;";
+
+        content +=      "newButton.id = bName;";
+        content +=      "newButton.className = 'LowySwitchButton';";
+        content +=      "newButton.addEventListener('click', function(){drawLowySwitchButton(bName, 3);});";
+	
+        content +=      "newHidden.type = 'hidden';";
+        content +=      "newHidden.name = bName;";
+
+        content +=      "var newRow   = document.createElement('tr');";
+        content +=      "var newCell1 = document.createElement('td');";
+        content +=      "var newCell2 = document.createElement('td');";
+
+        content +=      "newRow.appendChild(newCell1);";
+        content +=      "newRow.appendChild(newCell2);";
+
+        content +=      "var parent = document.getElementById('LSB_Table');";
+        content +=      "parent.appendChild(newRow);";
+
+        content +=      "newCell1.appendChild(newLabel);";
+
+        content +=      "newCell2.appendChild(newButton);";
+        content +=      "newCell2.appendChild(newHidden);";
+        content += "}";
+    }
+
+    void HTML_drawLowySwitchButton_JS(String &content) {
+        content += "function drawLowySwitchButton(name, revers) {";
+        content +=      "var vaszon   = document.getElementById(name);";
+        content +=      "var kapcsolo = document.getElementsByName(name)[0].value;";
+        content +=      "var ctx = vaszon.getContext('2d');";
+        content +=      "var pozX;";
+
+        content +=      "vaszon.width = 72;";
+        content +=      "vaszon.height = 18;";
+
+        content +=      "if (revers == 3) {";
+        content +=          "if (kapcsolo == 0) {";
+        content +=              "kapcsolo = 1;";
+        content +=          "} else {";
+        content +=              "kapcsolo = 0;}";
+        content +=      "} else {";
+        content +=          "kapcsolo = revers;";
+        content +=      "}";
+	
+        content +=      "document.getElementsByName(name)[0].value = kapcsolo;";
+	
+        content +=      "ctx.beginPath();";
+        content +=      "ctx.font = '16px Arial';";
+        content +=      "if ( kapcsolo == 0) {";
+        content +=          "ctx.fillStyle='rgb(255,0,0)';";
+        content +=          "ctx.fillText('Ki', 26, 15);";
+        content +=          "ctx.fillStyle='rgb(255,80,80)';";
+        content +=          "pozX = 12;";
+        content +=      "} else {";
+        content +=          "ctx.fillStyle='rgb(0,120,0)';";
+        content +=          "ctx.fillText('Be', 26, 15);";
+        content +=          "ctx.fillStyle='rgb(80,150,80)';";
+        content +=          "pozX = 59;";
+        content +=      "}";
+        content +=      "ctx.arc(pozX, 9, 8, 0, 2 * Math.PI);";
+        content +=      "ctx.fill();";
+        content +=      "ctx.stroke();";
+        content += "}";
+    }
+
     //******************************************************
     // Törzs elemek
 
     void HTML_Body(String siteTitle, String &content) {
         content += "<body onload='loaded();'>";
-        content += "<p><h1 style='text-align: center; line-height:50%'>LowySoft Termosztát</h1></p>";
+        content += "<p><h1 style='text-align: center;'>LowySoft Termosztát</h1></p>";
         content += "<h2 style='text-align: center; line-height: 0%;'><label id='TermostatID'></label></h2>";
-        content += "<h3 style='text-align: center; line-height:100%'>";
+        content += "<h3 style='text-align: center;'>";
         content += siteTitle;
-        content += "</h3><br/>";
+        content += "</h3>";
     }
 
     void HTML_BodyEnd(String &content) {
@@ -98,8 +212,9 @@ namespace htmlPageElements {
         content +=      "LowySost Termostat (C) 2020 V: 0.02.0000<br/>";
         content +=      "LowySoft Termostat Web Meneger (C) 2020 V: 1.00.000";
         content +=     "</h6>";
-        content +=   "</div>";
-        content +=   "</body>";
+        content += "</div>";
+        content += "</body>";
+        content += "</html>";
     }
 
     //*******************************************************
@@ -182,11 +297,11 @@ namespace htmlPageElements {
         content +=        "<table>";
         content +=            "<tr>";
         content +=                "<td style='text-align: right;'>SSID:</td>";
-        content +=                "<td><input type='text' name='SSID' id='SSID' size='32'/></td>";
+        content +=                "<td><input type='text' name='SSID' id='SSID' maxlength='32'/></td>";
         content +=            "</tr>";
         content +=            "<tr>";
         content +=                "<td style='text-align: right;'>Jelszó:</td>";
-        content +=                "<td><input type='text' name='Passworld' id='Passworld' size='64'><br/></td>";
+        content +=                "<td><input type='text' name='Passworld' id='Passworld' maxlength='64'><br/></td>";
         content +=            "</tr>";
         content +=        "</table>";
         content +=    "</fieldset>";
@@ -194,4 +309,9 @@ namespace htmlPageElements {
         content +=    "<input type='submit' class='Button' value='Mentés' /></p>";
         content +="</form>";                                                                                         
     }
+
+    //***************************************************
+    //
+    //   Beállítások lap
+
 }

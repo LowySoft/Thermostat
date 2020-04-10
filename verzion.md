@@ -12,6 +12,17 @@ LowySoft 2020 (C)
 
 ## *Fejlesztés követése:*
 
+### **2020. Április 10**
+
+- Kapcsolódási protokól módosítása védett SSL protokólra. Saját binztonsági kulcs létrehozására
+  ajánlott az openSSL, a következő parancsal:
+  > req -x509 -newkey rsa:1024 -sha256 -keyout key.txt -out cert.txt -nodes -days 36500 -subj "/C=HU/ST=./L=./O=cégnév/OU=szerkezeti egység/CN=webcím" -addext subjectAltName=DNS:webcím
+- http hívás átirányítása https oldalra, SSL-el titkosított kapcsolat esetén.
+- A titkosított átvitel ki/bekapcsólható fórdítás előtt a pratformio.ini fájlban.
+- OLED kijelző használata tíltható a patformio.ini fájlban.
+- OLED funkciók bekerűltek a displayClass osztályba.
+- Webfelületen megjelent a Beállítások lap, ahól ki lehet kapcsólni a WiFi egységet és a hőérzet alapú vezérlést, valamint be lehet állítani a termosztát egyedi azonosítóját.
+  
 ### **2020. Március 11**
 
 - Hálózati funkciók áthelyezve a 'Network communikation' mappába

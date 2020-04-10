@@ -1,13 +1,23 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
+#include <ESP8266WebServerSecure.h>
 #include <ESP8266mDNS.h>
+#include <DNSServer.h>
 #include "thermSet.h"
 #include "Network communikation/connect.h"
 #include "Network communikation/htmlPages.h"
+#include "Network communikation/secureKeys.h"
 
-ESP8266WebServer server(80);
-//uint8_t maxAp;                  // Last network scan found network number
+#define DNSPort 53
+
+#ifdef _SecServer_
+BearSSL::ESP8266WebServerSecure server(443);
+ESP8266WebServer                serverHTTP(80);
+#else
+ESP8266WebServer                server(80);
+#endif
+
+DNSServer dnsServer;
 
 Connect::Connect()
 {
@@ -16,6 +26,7 @@ Connect::Connect()
 
 Connect::~Connect()
 {
+    off();
     WiFi.disconnect();
 }
 
@@ -25,6 +36,8 @@ boolean Connect::begin()
     uint8_t i;
 
     WiFi.disconnect();
+    dnsServer.stop();
+
     if (thermSet.getSSID().length() == 0)               // Ha nincs SSID beállítva
         return false;
 
@@ -35,7 +48,7 @@ boolean Connect::begin()
     Serial.printf("Connect: Connecting to '%s' network", thermSet.getSSID().c_str());
 
     i = 0;
-    while ((WiFi.status() != WL_CONNECTED) && (i++ < 16))
+    while ((WiFi.status() != WL_CONNECTED) && (i++ < 10))
     {
         delay(1000);
         Serial.print(".");
@@ -47,9 +60,10 @@ boolean Connect::begin()
     }
 
     Serial.println(" done.");
-    Serial.printf("      IP=%s\n", WiFi.localIP().toString().c_str());
+    Serial.printf("         IP=%s\n", WiFi.localIP().toString().c_str());
     mode &= ~modeAP;
     mode |= modeClient;
+
     return true;
 }
 
@@ -59,7 +73,6 @@ boolean Connect::beginAP() {
     bool statAP = false;
 
     ap_static_ip.fromString("192.168.1.1");
-    ap_static_gw.fromString("192.168.1.254");
     ap_static_sn.fromString("255.255.255.0");
 
     if (WiFi.mode(WIFI_AP))    // Átváltás AP módba
@@ -67,15 +80,18 @@ boolean Connect::beginAP() {
         WiFi.disconnect();
         delay(100);
 
-        if (WiFi.softAPConfig(ap_static_ip, ap_static_gw, ap_static_sn))
-            if (WiFi.softAP(AP_SSID, AP_PASS, 2))
+        if (WiFi.softAPConfig(ap_static_ip, ap_static_ip, ap_static_sn))
+            if (WiFi.softAP(AP_SSID, AP_PASS, 2)) {
+                dnsServer.start(DNSPort, "thermostat.local", ap_static_ip);
                 statAP = true;
+            }
     }
 
     if (statAP) {
         IPAddress APIP = WiFi.softAPIP();
         Serial.print("Connect: Start AP mode\n    SSID="); Serial.println(AP_SSID);
-        Serial.print("      IP="); Serial.println(APIP.toString());
+        Serial.print("         IP="); Serial.print(APIP.toString());
+        Serial.println("  DNS: thermostat.local");
         mode &= ~modeClient;
         mode |= modeAP;
     } else {
@@ -90,20 +106,62 @@ void Connect::beginServer()
 {
     // Create Web server.
     mode |= modeRunServer;
+
+#ifdef _SecServer_
+    server.getServer().setRSACert(new BearSSL::X509List(serverCert), new BearSSL::PrivateKey(serverKey));
+
+    if (mode & modeAP) {    
+        serverHTTP.on("/", [](){
+            serverHTTP.sendHeader("Location", "https://thermostat.local", true);
+            serverHTTP.send(301, "text/plain", "");
+        });
+    }
+
+    if (mode & modeClient) {
+        serverHTTP.on("/", [](){
+            String str;
+
+            str = "https://" + thermSet.getHardwareID() + ".local";
+            serverHTTP.sendHeader("Location", str, true);
+            serverHTTP.send(301, "text/plain", "");
+        });
+    }
+
+    serverHTTP.begin();
+#endif
+
     createWebServer();
     server.begin();
 
-    Serial.println("Connect:  Web server is runing.");
+#ifdef _SecServer_
+    Serial.println("Connect: Secure Web server is runing.");
+#else
+    Serial.println("Connect: Web server is runing.");
+#endif
 }
 
 void Connect::begin_mDNS() {
   if (!MDNS.begin(thermSet.getHardwareID()))
     Serial.println("Connect: mDNS not started!");
   else {
-    MDNS.addService("http", "tcp", 80);
     Serial.printf("Connect: mDNS started, domain: %s.local\n", thermSet.getHardwareID().c_str());
     mode |= modeRunmDNS;
   }
+}
+
+void Connect::off()
+{
+    WiFi.disconnect();
+    WiFi.mode(WIFI_OFF);
+
+    server.stop();
+#ifdef _SecServer_
+    serverHTTP.stop();
+#endif
+    MDNS.end();
+    dnsServer.stop();
+
+    mode = notConnect;
 }
 
 void Connect::loop()
@@ -112,154 +170,40 @@ void Connect::loop()
         MDNS.update();
 
     if (mode & modeRunServer) {
+#ifdef _SecServer_
+        serverHTTP.handleClient();
+#endif
         server.handleClient();
     }
+
+    if (mode & modeAP) {
+        dnsServer.processNextRequest();
+    }
+}
+
+boolean Connect::isAPmode() {
+    return (mode & modeAP) ? true : false;
 }
 
 ////////////////////////
 //
 // Private section
 
-//String content;
-
 void Connect::createWebServer()
 {
     // Főoldal
-/*    server.on("/", []() {
-      String ID = thermSet.getID();
-
-      content.clear();
-      HTML_Header()
-      HTML_Loaded(ID)
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
-      HTML_Body("Főmenü")
-      HTML_Root
-      HTML_BodyEnd
-     
-      server.send(200, "text/html", content);
-    });
-*/
     server.on("/", htmlPages::createRoot);
 
     // Hállózatválasztás
-    /*server.on("/ap_select.html", []() {
-        int8_t selAp = -1;
-        uint8_t aktAp = 0;
-        String ID = thermSet.getID();
-        WiFi.scanDelete();
-        maxAp = WiFi.scanNetworks();
-
-      // Aktuális AP megkeresése
-      for(aktAp = 0; aktAp < maxAp; aktAp++) {
-          if (WiFi.SSID(aktAp) == thermSet.getSSID())
-            selAp = aktAp;
-      }
-
-      if (selAp == -1) {
-          if (thermSet.getSSID().length() > 0) {
-              selAp = maxAp;
-          } else {
-          selAp = 0;
-          }
-      }
-
-      content.clear();
-      HTML_Header();
-      HTML_ApSelect_JS()
-      HTML_ApSelect_SelectAp_JS()
-      HTML_Loaded(thermSet.getID())
-      HTML_ApSelect_Loaded(selAp)
-      if (selAp == maxAp) 
-          content += "tcSSID.value = '" + thermSet.getSSID() + "';";
-      if ( WiFi.encryptionType(selAp) != ENC_TYPE_NONE)
-          content += "tcPass.value = '" + thermSet.getPassworld() + "';";
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
-
-      HTML_Body("Hálózati beállítások")
-      HTML_ApSelectStart()
-
-      for (aktAp = 0; aktAp < maxAp; aktAp++) {
-        content += "<input type='radio' name='APList' id='APList_"; content += String(aktAp);
-        content += "' ePass=";
-        content += WiFi.encryptionType(aktAp) == ENC_TYPE_NONE ? 0 : 1;         // Jelszó mező engedélyezése, ha szükséges
-        content += " eSSID=0";
-        content += " value='"; content += String(aktAp);
-        content += "' onclick='setTextBoxEnables("; content += String(aktAp);
-        content += ");";
-        content += "'/><label for='APList_"; content += String(aktAp);
-        content += "'>" + WiFi.SSID(aktAp) + " (" + WiFi.RSSI(aktAp) + " dBm)";
-        content += "</label><br/>";
-      }
-
-      content += "<br/>";
-      content += "<input type='radio' name='APList' id='APList_"; content += String(aktAp);
-      content += "' ePass=1 eSSID=1";
-      content += " value='"; content += String(aktAp);
-      content += "' onclick='setTextBoxEnables(" + String(aktAp) +  ");'/><label for='APList_"; content += String(aktAp);
-      content += "'>Kézi bevitel:</label><br/>";
-
-      HTML_ApSelectEnd()
-      HTML_BodyEnd
-      
-      server.send(200, "text/html", content);
-
-    });
-    */
     server.on("/ap_select.html", htmlPages::createAPSelect);
 
     // Hállózat adatainak mentése
-/*    server.on("/ap_save_selectAP", HTTP_GET, []() {
-      String ID = thermSet.getID();
-      String pSSID;
-      String pPassw;
-      uint8_t listId = 0;
-      boolean error = false;
-
-      if (server.hasArg("APList")) {
-          listId = server.arg("APList").toInt();
-          if (listId == maxAp)
-            pSSID = server.arg("SSID");
-          else
-            pSSID = WiFi.SSID(listId);
-          
-          pPassw.clear();
-          if (server.hasArg("Passworld"))
-            pPassw = server.arg("Passworld");
-
-      } else {
-          error = true;
-      }
-
-      content.clear();
-      HTML_Header()
-      HTML_Loaded(ID)
-      HTML_LoadedEnd()
-      HTML_HeaderEnd()
-      HTML_Body("AP Beállítások mentése")
-
-      if (error == false) {
-          thermSet.setSSID(pSSID.c_str());
-          thermSet.setPassworld(pPassw);
-
-          content += "<p style='text-align: center; color: green;'>";
-          content += "Az adatok sikeressen el lettek mentve:<br/><br/>";
-          content += "SSID: " + pSSID + "<br/>";
-          content += "Passworld: " + pPassw + "<br/>";
-          content += "</p>";
-      } else {
-          content += "<p style='text-align: center; color: red;'>Hibás paraméterlista!<br/>A mentés nem sikerűlt.</p>";
-      }
-
-      content += "<p style='text-align:center'>";
-      content += "<input type='button' class='Button' onClick='document.location.href=\"/\";' value='Vissza'/>";
-      content += "</p>";
-      HTML_BodyEnd
-
-      server.send(200, "text/html", content);
-
-    });
-*/
     server.on("/ap_save_selectAP", HTTP_GET, htmlPages::saveAPSelect);
+
+    // Beállítások lap
+    server.on("/settings.html", htmlPages::createSettings);
+
+    // Beállítások mentése
+    server.on("/save_settings", HTTP_POST, htmlPages::saveSettings);
+    
 }

@@ -1,8 +1,16 @@
-#include <ESP8266WebServer.h>
+#include <ESP8266WebServerSecure.h>
 #include "Network communikation/htmlPages.h"
+#include "Network communikation/htmlPageElements.h"
 #include "thermSet.h"
+#include "Thermometer.h"
 
-extern ESP8266WebServer server;
+#ifdef _SecServer_
+extern ESP8266WebServerSecure server;
+#else
+extern ESP8266WebServer       server;
+#endif
+
+extern Thermometer sensors;
 
 namespace htmlPages {
 
@@ -13,14 +21,26 @@ namespace htmlPages {
       String ID = thermSet.getID();
 
       content.clear();
-      htmlPageElements::HTML_Header(content);
+      htmlPageElements::HTML_Header(content, true);
       htmlPageElements::HTML_Loaded(ID, content);
       htmlPageElements::HTML_LoadedEnd(content);
       htmlPageElements::HTML_HeaderEnd(content);
-      htmlPageElements::HTML_Body("Főmenü", content);
+      htmlPageElements::HTML_Body("Főoldal", content);
+      content += "<h3 style='text-align: center;'>";
+      content += "Hőfok: ";
+      content += String(sensors.getThemp(), 1) + " °C<br>";
+      
+      if (sensors.isHumidity()) {
+        content += "Páratartalom: ";
+        content += String(sensors.getHumidity(), 1) + "%<br>";
+        content += "Hőérzet: ";
+        content += String(sensors.getHeatIndex() , 1) + " °C<br>";
+      }
+
+      content += "</h3>";
       htmlPageElements::HTML_Root(content);
       htmlPageElements::HTML_BodyEnd(content);
-     
+
       server.send(200, "text/html", content);
     }
 
@@ -83,7 +103,7 @@ namespace htmlPages {
 
       htmlPageElements::HTML_ApSelectEnd(content);
       htmlPageElements::HTML_BodyEnd(content);
-      
+
       server.send(200, "text/html", content);
     }
 
@@ -125,16 +145,101 @@ namespace htmlPages {
           content += "SSID: " + pSSID + "<br/>";
           content += "Passworld: " + pPassw + "<br/>";
           content += "</p>";
+          content += "<p style='text-align:center'>";
+          content += "Az eszköz újraindúl.";
+          content += "</p>";
       } else {
           content += "<p style='text-align: center; color: red;'>Hibás paraméterlista!<br/>A mentés nem sikerűlt.</p>";
+          content += "<p style='text-align:center'>";
+          content += "<input type='button' class='Button' onClick='document.location.href=\"/\";' value='Vissza'/>";
+          content += "</p>";
       }
 
-      content += "<p style='text-align:center'>";
-      content += "<input type='button' class='Button' onClick='document.location.href=\"/\";' value='Vissza'/>";
+      htmlPageElements::HTML_BodyEnd(content);
+      
+      server.send(200, "text/html", content);
+      if (error == false)
+        ESP.restart();
+    }
+
+    void createSettings() {
+      content.clear();
+      htmlPageElements::HTML_Header(content);
+      htmlPageElements::HTML_addLowySwitchButtonToTheTable_JS(content);
+      htmlPageElements::HTML_drawLowySwitchButton_JS(content);
+      htmlPageElements::HTML_Loaded(thermSet.getID(), content);
+
+      content += "drawLowySwitchButton('wifi'," + String(isWiFiEnable) + ");";
+      if (sensors.isHumidity())   // Ha van páratartalom mérés
+        content += "drawLowySwitchButton('heat'," + String(isHeatIndexEnable) + ");";
+      
+      htmlPageElements::HTML_LoadedEnd(content);
+      htmlPageElements::HTML_HeaderEnd(content);
+
+      htmlPageElements::HTML_Body("Beállítások", content);
+      content += "<form method='POST' action='save_settings'>";
+      htmlPageElements::HTML_LowySwitchButtonTabe(content);
+      content += "<p align='center'>";
+      content += "<input type='button' class='Button' value='Vissza' onClick='document.location.href=\"/\";'>";
+      content += "<input type='submit' class='Button' value='Mentés'>";
       content += "</p>";
+      content += "</form>";
+
+      if (sensors.isHumidity())   // Ha van páratartalom mérés
+        content += "<br><div align='center'> <sup>*</sup> A hőérzet a mért hőmérséglet és a páratartalom alapján kerűl megállapításra.</div>";
+
+      content += "<script>";
+      content += "addLowySwitchButtonToTheTable('WiFi:', 'wifi');";
+      if (sensors.isHumidity())   // Ha van páratartalom mérés
+        content += "addLowySwitchButtonToTheTable('<sup>*</sup> Hőérzet alapú használat:', 'heat');";
+
+      // Azonosító sor hozzáadása a táblázathoz
+      content +=      "var newRow   = document.createElement('tr');";
+      content +=      "var newCell1 = document.createElement('td');";
+      content +=      "var newCell2 = document.createElement('td');";
+
+      content +=      "newRow.appendChild(newCell1);";
+      content +=      "newRow.appendChild(newCell2);";
+
+      content +=      "var parent = document.getElementById('LSB_Table');";
+      content +=      "parent.appendChild(newRow);";
+
+      content += "newCell1.innerHTML='Azonosító:';";
+
+      content += "var newInput = document.createElement('input');";
+      content += "newInput.type='text';";
+      content += "newInput.maxSize=64;";
+      content += "newInput.style.margin = 5;";
+      content += "newInput.value='" + thermSet.getID() + "';";
+      content += "newInput.name='thermID';";
+
+      content += "newCell2.appendChild(newInput);";
+      content += "</script>";
+      
       htmlPageElements::HTML_BodyEnd(content);
 
       server.send(200, "text/html", content);
+    }
 
+    void saveSettings() {
+      long param;
+
+      if (server.hasArg("wifi")) {
+        param = server.arg("wifi").toInt();
+        if (param == 0) WiFi_Disable;
+         else WiFi_Enable;
+      }
+
+      if(server.hasArg("heat")) {
+        param = server.arg("heat").toInt();
+        if (param == 0) HeatIndex_Disable;
+         else HeatIndex_Enable;
+      }
+
+      if(server.hasArg("thermID"))
+        thermSet.setID(server.arg("thermID"));
+
+      server.sendHeader("Location", "/", true);
+      server.send(301, "text/plain", "");
     }
 }

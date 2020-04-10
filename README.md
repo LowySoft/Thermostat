@@ -12,9 +12,9 @@ LowySoft 2020 (C)
 
 ## *Tulajdonságok:*
 
-- http://xxxxxx-thermostat.local címen kersztüli kapcsolódás a helyi hállózaton
+- https://xxxxxx-thermostat.local címen kersztüli titkosított kapcsolódás a helyi hállózaton keresztűl a beállításokhoz
 - Egység hállózati neve xxxxxx-thermostat
-- AP módon keresztüli beállítása a wifi kapcsolatnak
+- AP módon keresztüli beállítása a wifi kapcsolatnak titkosított kapcsolaton kersztűl a thermostat.local vagy a 192.168.1.1 címen.
 
 xxxxxx = A termosztátban található chip egyedi azonosítója
 

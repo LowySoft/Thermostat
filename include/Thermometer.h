@@ -59,6 +59,7 @@ public:
     boolean    isHumidity();                                // Van Páratartalom mérő?
     float      getThemp(uint8_t thempNum = 0);              // Hőmérségleti adatok lekérdezése
     float      getHumidity();                               // Párataltalom lekérdezése
+    float      getHeatIndex();                              // Kalkulált hőérzet
 
 private:
     void        loop_DS18();
